@@ -75,6 +75,8 @@
         <zip basedir="build/lib" compress="true" destfile="dist/${application.title}.cn1lib" />
         <copy file="dist/${application.title}.cn1lib" todir="../lib"/>
         <ant dir=".." target="refresh-libs" inheritall="false"/>
+        <copy file="dist/${application.title}.cn1lib" todir="../CordovaProjectTemplate/lib"/>
+        <ant dir="../CordovaProjectTemplate" target="refresh-libs" inheritall="false"/>
     </target>
 
     <target name="buildNativeRIM">

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="CN1Cordova" default="default" basedir="..">
+    <description>Tools for cordova applications</description>
+    <taskdef name="generateCordovaPlugins" classname="com.codename1.cordova.SetupCordovaPluginsTask" classpath="lib/CordovaAppBuilder.jar"/>
+    
+    <target name="refresh-plugins" description="Regenerates the cordova_plugins.js file">
+        <generateCordovaPlugins/>
+    </target>
+    
+    <target name="default" depends="refresh-plugins"/>
+    
+</project>

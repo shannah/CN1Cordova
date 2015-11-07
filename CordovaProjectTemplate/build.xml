@@ -10,7 +10,6 @@
     <taskdef name="installLibs" classname="com.codename1.build.client.InstallLibsTask" classpath="CodeNameOneBuildClient.jar"/>
     <taskdef name="verifyDir" classname="com.codename1.build.client.VerifyDir" classpath="CodeNameOneBuildClient.jar"/>
     <taskdef name="generateGuiSources" classname="com.codename1.build.client.GenerateGuiSources" classpath="CodeNameOneBuildClient.jar"/>
-    <taskdef name="generateCordovaPlugins" classname="com.codename1.cordova.SetupCordovaPluginsTask" classpath="lib/CordovaAppBuilder.jar"/>
     <target depends="init,compile,jar" name="compile-test">
         <mkdir dir="${build.test.classes.dir}" />
         <javac destdir="${build.test.classes.dir}"
@@ -39,8 +38,6 @@
     <target depends="-do-test-run" description="Run unit tests." name="test"/>
 
     <target name="-pre-compile">
-        <generateCordovaPlugins/>
-        
         <echo>Compile is forcing compliance to the supported API's/features for maximum device compatibility. This allows smaller
         code size and wider device support</echo>
         <mkdir dir="build/tmp"/>

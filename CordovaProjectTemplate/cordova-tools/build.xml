@@ -2,9 +2,13 @@
 <project name="CN1Cordova" default="default" basedir="..">
     <description>Tools for cordova applications</description>
     <taskdef name="generateCordovaPlugins" classname="com.codename1.cordova.SetupCordovaPluginsTask" classpath="lib/CordovaAppBuilder.jar"/>
-    
+    <taskdef name="importCordovaApp" classname="com.codename1.cordova.ImportCordovaAppTask" classpath="lib/CordovaAppBuilder.jar"/>
     <target name="refresh-plugins" description="Regenerates the cordova_plugins.js file">
         <generateCordovaPlugins/>
+    </target>
+    <target name="import" description="Imports existing cordova app.  usage: ant import -Dsource=/path/to/app">
+        <importCordovaApp/>
+        <antcall target="refresh-plugins"/>
     </target>
     
     <target name="default" depends="refresh-plugins"/>

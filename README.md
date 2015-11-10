@@ -9,7 +9,7 @@ This project enables developers to create Cordova (HTML5/Javascript) hybrid nati
 
 ## Using the Tools
 
-### Creating a New Cordova Project
+### Creating a New Codename One Cordova Project
 
 From the terminal or command prompt:
 
@@ -30,7 +30,7 @@ By default the project is generated inside the cn1-cordova-tools directory.  You
 $ ant create -Did=com.example.hello -Dname=HelloWorld -Ddest=/Users/shannah/NetbeansProjects
 ~~~~
 
-### Converting an Existing Cordova Project
+### Migrating an Existing Cordova Project to a Codename One Cordova Project
 
 From the terminal or command prompt:
 

@@ -11,6 +11,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -104,141 +106,13 @@ public class ImportCordovaAppTask extends Task {
         copyWWW.setTodir(htmlDir);
         copyWWW.execute();
         
-        Properties codenameOneSettings = new Properties();
-        File codenameOneSettingsFile = new File(getProject().getBaseDir(), "codenameone_settings.properties");
-        if (!codenameOneSettingsFile.exists()) {
-            throw new BuildException("No codenameone_settings.properties file found at "+codenameOneSettingsFile);
-        }
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(codenameOneSettingsFile);
-            codenameOneSettings.load(fis);
-        } catch (Exception ex) {
-            throw new BuildException("Failed to load "+codenameOneSettingsFile, ex);
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (Exception ex) {
-                    
-                }
-            }
-        }
-        
-        codenameOneSettings.setProperty("codename1.version", version);
-        
-        String oldPackage = codenameOneSettings.getProperty("codename1.packageName");
-        
-        
-        codenameOneSettings.setProperty("codename1.packageName", packageId);
-        codenameOneSettings.setProperty("codename1.displayName", name);
-        String iosAppId = codenameOneSettings.getProperty("codename1.ios.appid");
-        if (iosAppId == null) {
-            iosAppId = "BQ5FVWYLLB.com.codename1.demos.cordova";
-        }
-        iosAppId = iosAppId.substring(0, iosAppId.indexOf("."))+"."+packageId;
-        codenameOneSettings.setProperty("codename1.ios.appid", iosAppId);
-        
-        if (!packageId.equals(oldPackage)) {
-            String oldMainPath = oldPackage.replace(".", File.separator);
-            String newMainPath = packageId.replace(".", File.separator);
-            File oldMainFile = new File(srcDir, oldMainPath);
-            File newMainFile = new File(srcDir, newMainPath);
-            
-            if (!oldMainFile.exists()) {
-                throw new BuildException("Could not find old main file: "+oldMainFile);
-            }
-            
-            File oldMainDir = oldMainFile.getParentFile();
-            File newMainDir = newMainFile.getParentFile();
-            
-            newMainDir.getParentFile().mkdirs();
-            if (newMainDir.exists()) {
-                for (File f : oldMainDir.listFiles()) {
-                    if (".".equals(f.getName()) || "..".equals(f.getName())) {
-                        continue;
-                    }
-                    f.renameTo(new File(newMainDir, f.getName()));
-                }
-                oldMainDir.delete();
-            } else {
-            
-                oldMainDir.renameTo(newMainDir);
-            }
-            
-            Replace replaceTask = (Replace)getProject().createTask("replace");
-            replaceTask.setDir(srcDir);
-            replaceTask.setIncludes("**/*.java");
-            NestedString token = replaceTask.createReplaceToken();
-            token.addText(oldPackage);
-            
-            replaceTask.createReplaceValue().addText(packageId);
-            replaceTask.execute();
-        }
-        
-        
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(codenameOneSettingsFile);
-            codenameOneSettings.store(fos, "Updated by ImportCordovaAppTask "+new Date());
-        } catch (Exception ex) {
-            throw new BuildException("Failed to save changes to "+codenameOneSettingsFile, ex);
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (Exception ex){}
-            }
-        }
-        
-        
-        
-        File nbprojectDir = new File(getProject().getBaseDir(), "nbproject");
-        
-        File nbprojectPropertiesFile = new File(nbprojectDir, "project.properties");
-        if (nbprojectPropertiesFile.exists()) {
-            Properties nbprojectProperties = new Properties();
-            log("Updating Netbeans properties file "+nbprojectPropertiesFile);
-            fis = null;
-            try {
-                fis = new FileInputStream(nbprojectPropertiesFile);
-                nbprojectProperties.load(fis);
-            } catch (Exception ex) {
-                throw new BuildException("Failed to load netbeans project properties at "+nbprojectPropertiesFile);
-            } finally {
-                if (fis != null) {
-                    try {
-                        fis.close();
-                    } catch (Exception ex){}
-                }
-            }
-            
-            String normalizedName = name.replaceAll("[^a-zA-Z0-9]", "");
-            
-            nbprojectProperties.setProperty("application.title", name);
-            nbprojectProperties.setProperty("dist.jar", "${dist.dir}/"+normalizedName+".jar");
-            
-            fos = null;
-            try {
-                fos = new FileOutputStream(nbprojectPropertiesFile);
-                nbprojectProperties.store(fos, "Updated by ImportCordovaAppTask "+new Date());
-            } catch (Exception ex) {
-                throw new BuildException("Failed to save changes to "+nbprojectPropertiesFile, ex);
-            } finally {
-                if (fos != null) {
-                    try {
-                        fos.close();
-                    } catch (Exception ex){}
-                }
-            }
-            
-            
-            Replace replaceProjectName = (Replace)getProject().createTask("replace");
-            replaceProjectName.setFile(new File(nbprojectDir, "project.xml"));
-            replaceProjectName.createReplaceToken().addText("<name>CordovaProjectTemplate</name>");
-            replaceProjectName.createReplaceValue().addText("<name>"+name.replace("<", "&lt;").replace(">", "&gt;")+"</name>");
-            replaceProjectName.execute();
-        }
+        //Properties codenameOneSettings = new Properties();
+        CodenameOneCordovaProject project = new CodenameOneCordovaProject();
+        project.setProjectDir(getProject().getBaseDir());
+        project.setProjectName(name);
+        project.setPackageId(packageId);
+        project.setVersion(version);
+        project.updateProject(this);
         log("Successfully imported cordova project at "+sourceDir);
     }
     

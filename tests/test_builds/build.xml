@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Test Create Codename One Cordova Project" default="default" basedir=".">
+    <description>Tests the creation of new cordova projects</description>
+    <target name="clean" description="Remove the dist directory">
+        <delete dir="dist"/>
+    </target>
+    
+    <target name="init">
+        <mkdir dir="dist"/>
+        
+        <ant dir="../.." target="build-cn1-cordova-tools" inheritall="false"/>
+        <unzip dest="dist/cn1-cordova-tools" src="../../dist/cn1-cordova-tools.zip"/>
+    </target>
+    
+    <target name="test-new" description="Test creating new app with id and name" depends="init">
+        <ant dir="dist/cn1-cordova-tools" target="create">
+            <property name="id" value="com.example.hello"/>
+            <property name="name" value="Hello World"/>
+        </ant>
+    </target>
+    
+    <target name="test-new-with-dest" description="Test creating a new app with id, name, and dest" depends="init">
+        
+        <ant dir="dist/cn1-cordova-tools" target="create" inheritall="false">
+            <property name="id" value="com.example.hello"/>
+            <property name="name" value="Hello World"/>
+            <property name="dest" value="dist"/>
+        </ant>
+    </target>
+    
+    <target name="test-weather-app" description="Test build weather app." depends="init">
+        
+        <ant dir="dist/cn1-cordova-tools" target="create" inheritall="false">
+            <property name="source" value="sample-inputs/WeatherApp"/>
+        </ant>
+    </target>
+    
+    <target name="test-weather-app-with-dest" description="Test build weather app in dist directory." depends="init">
+        
+        <ant dir="dist/cn1-cordova-tools" target="create" inheritall="false">
+            <property name="source" value="sample-inputs/WeatherApp"/>
+            <property name="dest" value="dist"/>
+        </ant>
+    </target>
+    
+    
+</project>

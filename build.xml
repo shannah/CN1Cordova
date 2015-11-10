@@ -441,7 +441,53 @@
             classpath="${javac.classpath}:${build.classes.dir}">
             <src path="native/javase"/>
             <src path="lib/impl/native/javase"/>
-        </javac>        
+        </javac>
+        
+         <antcall target="cordova-project-template"/>    
+    </target>
+    
+    <target name="build-cn1-cordova-tools" depends="cordova-project-template" description="Builds the CN1 Cordova CLI project.">
+        <ant dir="CordovaAppBuilder" target="jar" inheritall="false"/>
+        <property name="tools.dist.dir" location="dist/cn1-cordova-tools"/>
+        <delete dir="${tools.dist.dir}"/>
+        <mkdir dir="${tools.dist.dir}"/>
+        <mkdir dir="${tools.dist.dir}/CordovaProjectTemplate"/>
+        <copy todir="${tools.dist.dir}">
+            <fileset dir="CordovaAppBuilder/dist" includes="CordovaAppBuilder.jar"/>
+            <fileset dir="cn1-cordova-tools" includes="**"/>
+        </copy>
+        <copy todir="${tools.dist.dir}/CordovaProjectTemplate">
+            <fileset dir="CordovaProjectTemplate">
+                <exclude name="dist"/>
+                <exclude name="build"/>
+            </fileset>
+        </copy>
+        <copy file="JavaSE.jar" tofile="${tools.dist.dir}/CordovaProjectTemplate/JavaSE.jar"/>
+        <copy file="lib/CodenameOne.jar" tofile="${tools.dist.dir}/CordovaProjectTemplate/lib/CodenameOne.jar"/>
+        <copy file="lib/CodenameOne_SRC.zip" tofile="${tools.dist.dir}/CordovaProjectTemplate/lib/CodenameOne_SRC.zip"/>
+        <property name="tools.dist.zip" location="dist/cn1-cordova-tools.zip"/>
+        <zip file="${tools.dist.zip}">
+            <fileset dir="${tools.dist.dir}" includes="**"/>
+        </zip>
+        <delete dir="${tools.dist.dir}"/>
+    </target>
+    
+    <!--  Generates release for the Cordova Project Template -->
+    <target name="cordova-project-template" description="Generates release for cordova project template">
+        <delete dir="dist/CordovaProjectTemplate"/>
+        <mkdir dir="dist/CordovaProjectTemplate"/>
+        <copy todir="dist/CordovaProjectTemplate">
+            <fileset dir="CordovaProjectTemplate" excludes="dist/**,build/**"/>
+        </copy>
+        
+        <copy file="lib/CodenameOne.jar" todir="dist/CordovaProjectTemplate/lib"/>
+        <copy file="JavaSE.jar" todir="dist/CordovaProjectTemplate"/>
+        
+        <zip file="dist/CordovaProjectTemplate.zip">
+            <fileset dir="dist/CordovaProjectTemplate" includes="**"/>
+        </zip>
+        
+        <delete dir="dist/CordovaProjectTemplate"/>
     </target>
 
     <target name="cn1lib">

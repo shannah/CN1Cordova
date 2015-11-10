@@ -25,10 +25,13 @@
 package com.codename1.cordova;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Various utility methods used for HTTP/IO operations
@@ -83,6 +86,77 @@ public class Util {
         f.deleteOnExit();
         copyToFile(i, f);
         return f;
+    }
+    
+    
+    public static Properties loadProperties(File propsFile) throws IOException {
+        Properties props = new Properties();
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(propsFile);
+            props.load(fis);
+            return props;
+            
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (Exception ex) {
+                    
+                }
+            }
+            
+        }
+    }
+    
+    public static void saveProperties(Properties props, File propsFile, String comment) throws IOException {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(propsFile);
+            props.store(fos, comment);
+            fos.close();
+            fos = null;
+            
+        } finally {
+           
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (Exception ex){}
+            }
+        }
+    }
+    
+    public static void updatePropertiesFile(File propsFile, Map<String,String> values, String comment) throws IOException {
+        Properties props = new Properties();
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            fis = new FileInputStream(propsFile);
+            props.load(fis);
+            fis.close();
+            fis = null;
+            props.putAll(values);
+            
+            fos = new FileOutputStream(propsFile);
+            props.store(fos, comment);
+            fos.close();
+            fos = null;
+            
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (Exception ex) {
+                    
+                }
+            }
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (Exception ex){}
+            }
+        }
     }
     
     
